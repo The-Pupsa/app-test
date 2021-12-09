@@ -1,0 +1,9 @@
+<div class="flex items-center justify-between mb-4">
+  <div class="flex-shrink-0">
+    <h3 class="text-xl font-bold text-gray-900 mb-2">Transactions by Systems</h3>
+  </div>
+</div>
+<div appChart
+     [entries]="rawEntries"
+     seriesProperty="System"
+     amountProperty="Amount"></div>
