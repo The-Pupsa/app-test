@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, Input, NgZone, OnChanges, OnDestroy, OnInit } from '@angular/core';
 
 import ResizeObserver from 'resize-observer-polyfill';
 import { asyncScheduler, Subject, Subscription } from 'rxjs';
@@ -6,8 +6,9 @@ import { throttleTime } from 'rxjs/operators';
 
 import { EChartsOption, ECharts } from 'echarts';
 import * as echarts from 'echarts';
+
 import { ChartDatasetService } from './chart-dataset.service';
-import { _getShadowRoot } from '@angular/cdk/platform';
+import { YAXisOptionSeries } from './shared/types/YAXis-option-series.type';
 
 /** Directive for building charts */
 @Directive({
@@ -15,22 +16,12 @@ import { _getShadowRoot } from '@angular/cdk/platform';
 })
 export class ChartDirective<T> implements OnInit, OnChanges, OnDestroy {
 
-  @Input()
-  set entries(b: T[]) {
-    this._entries = b;
-  }
-
-  get entries(): T[] {
-    return this._entries;
-  }
-
-  @Input() type: string = 'line';
-  @Input() seriesProperty: string = '';
-  @Input() amountProperty: string = '';
+  @Input() entries: T[] = [];
+  @Input()  yAxis: YAXisOptionSeries[] = [];
+  @Input() xAxis: string = '';
 
   public animationFrameID?: number;
 
-  private _entries: T[] = []
   private _resizeOb?: ResizeObserver;
   private _resize$ = new Subject<void>();
   private _resizeSub?: Subscription;
@@ -61,7 +52,7 @@ export class ChartDirective<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   /** @inheritDoc */
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
     this._initChartOptions();
   }
 
@@ -89,89 +80,27 @@ export class ChartDirective<T> implements OnInit, OnChanges, OnDestroy {
   private _initChartOptions(): void {
     this._chart?.clear();
 
-    const dataset = this._chartDataset.getDataset(this.entries);
-    const series = this._chartDataset.getSeries(this.seriesProperty, this.entries);
-    const datasetWithFilters = this.type === 'line' ? this._chartDataset.getDatasetWithFilters(series, this.seriesProperty) : [];
-    const seriesList = this._getSeriesList(series);
-
-    // specify chart configuration item and data
-    let option: EChartsOption = {
-      animationDuration: 2000,
-      legend: {
-        orient: 'horizontal',
-        bottom: 'bottom'
-      },
+    const option: EChartsOption = {
       tooltip: {
-        order: 'valueDesc',
-        trigger: 'axis'
-      },
-      series: seriesList
-    };
-
-    if (this.type === 'line') {
-      option = {
-        ...option, ...{
-          dataset: [
-            {
-              id: 'dataset_raw',
-              source: dataset
-            },
-            ...datasetWithFilters
-          ],
-          xAxis: {
-            type: 'category',
-            nameLocation: 'middle'
-          },
-          yAxis: {
-            name: this.amountProperty
-          },
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
         }
-      };
-    }
+      },
+      legend: {
+        show: true
+      },
+      xAxis: [
+        {
+          data: this._chartDataset.getXAxis(this.entries, this.xAxis),
+        }
+      ],
+      yAxis: this.yAxis,
+      series: this._chartDataset.getSeries(this.entries, this.yAxis),
+    };
 
     // use configuration item and data specified to show chart
     this._chart?.setOption(option);
-  }
-
-  // TODO разобраться с настройками библиотеки
-  private _getSeriesList(series: string[]): any[] {
-    const seriesList: any[] = [];
-
-    if (this.type === 'pie') {
-      seriesList.push(
-        {
-          type: 'pie',
-          id: 'pie',
-          radius: '50%',
-          center: ['50%', '35%'],
-          data: this._chartDataset.getDataSetForPie(series, this.entries, this.amountProperty, this.seriesProperty),
-        }
-      );
-
-      return seriesList;
-    }
-
-    series.forEach(s => {
-      const datasetId = 'dataset_' + s;
-      seriesList.push({
-        type: this.type,
-        smooth: true,
-        radius: '50%',
-        datasetId,
-        name: s,
-        emphasis: {
-          focus: 'series'
-        },
-        encode: {
-          x: 'DateISO',
-          y: this.amountProperty,
-          label: ['System', this.amountProperty],
-          itemName: 'DateISO',
-          tooltip: [this.amountProperty]
-        }
-      });
-    });
-    return seriesList;
   }
 
   /** Dispose chart */

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TransactionsChartComponent } from './transactions-chart.component';
+import { ForecastChart2Component } from './forecast-chart2.component';
 
-describe('TransactionsChartComponent', () => {
-  let component: TransactionsChartComponent;
-  let fixture: ComponentFixture<TransactionsChartComponent>;
+describe('TransactionsPieComponent', () => {
+  let component: ForecastChart2Component;
+  let fixture: ComponentFixture<ForecastChart2Component>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TransactionsChartComponent ]
+      declarations: [ ForecastChart2Component ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TransactionsChartComponent);
+    fixture = TestBed.createComponent(ForecastChart2Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

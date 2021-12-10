@@ -1,7 +1,8 @@
 <div class="mb-4 flex items-center justify-between">
   <div>
-    <h3 class="text-xl font-bold text-gray-900 mb-2">Latest Transactions</h3>
-    <span class="text-base font-normal text-gray-500">This is a list of latest transactions</span>
+    <h3 class="text-xl font-bold text-gray-900 mb-2">Forecast</h3>
+    <span class="text-base font-normal text-gray-500">
+      Weather forecast for the coming days</span>
   </div>
 </div>
 <div class="flex flex-col mt-8">
@@ -13,30 +14,28 @@
           <tr>
             <th scope="col"
                 class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Transaction
-            </th>
-            <th scope="col"
-                class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Date & Time
             </th>
             <th scope="col"
                 class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Amount
+              Temperature
+            </th>
+            <th scope="col"
+                class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Wind speed
             </th>
           </tr>
           </thead>
           <tbody class="bg-white">
-          <tr *ngFor="let transaction of latestTransactions">
-            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-              <ng-container *ngIf="!isRefund(transaction.Amount)">Payment via <span class="font-semibold">{{ transaction.System }}</span>
-              </ng-container>
-              <ng-container *ngIf="isRefund(transaction.Amount)">Payment refund</ng-container>
-            </td>
+          <tr *ngFor="let item of forecastData">
             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-              {{ transaction.DateISO | date }}
+              {{ item.date | date: 'medium' }}
             </td>
-            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-              {{ transaction.Amount | currency }}
+            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-500">
+              {{ item.main.temp }}℉
+            </td>
+            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
+              {{ item.wind.speed }}m/sec
             </td>
           </tr>
           </tbody>

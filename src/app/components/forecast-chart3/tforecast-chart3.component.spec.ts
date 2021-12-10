@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TransactionsPieComponent } from './transactions-pie.component';
+import { ForecastChart3Component } from './forecast-chart3.component';
 
 describe('TransactionsPieComponent', () => {
-  let component: TransactionsPieComponent;
-  let fixture: ComponentFixture<TransactionsPieComponent>;
+  let component: ForecastChart3Component;
+  let fixture: ComponentFixture<ForecastChart3Component>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TransactionsPieComponent ]
+      declarations: [ ForecastChart3Component ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TransactionsPieComponent);
+    fixture = TestBed.createComponent(ForecastChart3Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

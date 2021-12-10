@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { IData } from './shared/interfaces/data.interface';
+import { SeriesOption$1 } from './shared/types/series-option$1.type';
+import { YAXisOptionSeries } from './shared/types/YAXis-option-series.type';
+import {
+  get as _get,
+} from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -9,62 +13,34 @@ export class ChartDatasetService {
   constructor() {
   }
 
-  getDataset<T>(entries: T[]): Array<Array<unknown>> {
-    const dataset: Array<Array<unknown>> = entries.map((entry: T) => {
-      return Object.values(entry);
-    });
-
-    const [firstRecord] = entries;
-    if (firstRecord) {
-      dataset.unshift(Object.keys(firstRecord));
+  // TODO типизация
+  getXAxis<T>(entries: T[], property: string): any[] {
+    if (!property) {
+      return [];
     }
-    return dataset;
+
+    return entries.map((entry: any) => entry[property]);
   }
 
-  getSeries<T>(propertyName: string, entries: T[]): string[] {
-    const allValues = entries.reduce((acc, current: any) => {
-      const currentValue: string = current[propertyName] as string;
-      return [...acc, currentValue];
-    }, [] as string[]);
-
-    return Array.from(new Set(allValues));
-  }
-
-  getDatasetWithFilters<T>(series: string[], propertyName: string): any[] {
-    const datasetWithFilters: any[] = [];
-    series.forEach(s => {
-      const datasetId = 'dataset_' + s;
-      datasetWithFilters.push({
-        id: datasetId,
-        fromDatasetId: 'dataset_raw',
-        transform: {
-          type: 'filter',
-          config: {
-            and: [
-              {dimension: propertyName, '=': s}
-            ]
+  getSeries<T>(entries: T[], yAxis: YAXisOptionSeries[]): SeriesOption$1[] {
+    const series: SeriesOption$1[] = [];
+    yAxis?.forEach((item, index) => {
+      item.series.forEach(s => {
+        series.push(
+          {
+            name: s.name,
+            type: s.type,
+            yAxisIndex: index,
+            data: s.show && this._getRow(entries, s.dataRoute),
           }
-        }
+        );
       });
-
     });
-    return datasetWithFilters;
+
+    return series;
   }
 
-  getDataSetForPie<T>(series: string[], entries: T[], propertyName: string, seriesProperty: string): IData[] {
-    return entries.reduce((acc, current: any) => {
-      const value: number = parseFloat(current[propertyName]);
-      const name: string = current[seriesProperty] as string;
-      const foundedValue = acc.find(item => item.name === name);
-      if (foundedValue) {
-        foundedValue.value += value;
-      } else {
-        acc.push({
-          name,
-          value,
-        });
-      }
-      return acc;
-    }, [] as IData[]);
+  private _getRow<T>(entries: T[], dataRoute: string): any[] {
+    return entries.map(entry => _get(entry, dataRoute));
   }
 }

@@ -1,0 +1,49 @@
+<div class="flex items-center justify-between mb-2">
+  <div class="flex-shrink-0">
+    <h2 class="text-xl font-bold text-gray-900 mb-2">Forecast charts</h2>
+  </div>
+</div>
+<div
+    [formGroup]="formGroup"
+    class="flex text-gray-500">
+  <mat-radio-group
+      formControlName="Temperature"
+      class="flex flex-col mr-8">
+    <mat-label class="mb-3">Temperature</mat-label>
+    <mat-radio-button
+        class="mb-1"
+        *ngFor="let type of chartTypes"
+        [value]="type">
+      {{ type }}
+    </mat-radio-button>
+  </mat-radio-group>
+  <mat-radio-group
+      formControlName="Temperature (feels like)"
+      class="flex flex-col mr-8">
+    <mat-label class="mb-3">Temperature (feels like)</mat-label>
+    <mat-radio-button
+        class="mb-1"
+        *ngFor="let type of chartTypes"
+        [value]="type">
+      {{ type }}
+    </mat-radio-button>
+  </mat-radio-group>
+  <mat-radio-group
+      formControlName="Humidity"
+      class="flex flex-col">
+    <mat-label class="mb-3">Humidity</mat-label>
+    <mat-radio-button
+        class="mb-1"
+        *ngFor="let type of chartTypes"
+        [value]="type">
+      {{ type }}
+    </mat-radio-button>
+  </mat-radio-group>
+</div>
+
+<div appChart
+     class="mt-4"
+     *ngIf="rawEntries"
+     [entries]="rawEntries"
+     [yAxis]="yAxis"
+     xAxis="date"></div>
